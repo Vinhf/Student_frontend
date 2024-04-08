@@ -1,33 +1,18 @@
-import { useState, useEffect } from 'react'
-import './App.css'
-import axios from 'axios'
+import "./App.css";
+import Login from "./Login";
+import background from "./assets/dep2.jpg";
 
 function App() {
-  const [data, setData] = useState([])
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('http://localhost:3000/')
-        setData(response.data)
-      } catch (error) {
-        console.log(error)
-      }
-    }
-    
-    fetchData() 
-  }, []) 
-
   return (
-    <>
-      <h1>Test Data gửi qua frontend</h1>
-      {data.map(user => (
-        <div key={user.user_id}>
-          <h2>{user.full_name}</h2>
-        </div>
-      ))}
-    </>
-  )
+    <div
+      className="text-white h-[90vh] w-[80vw] flex justify-center items-center bg-cover"
+      style={{
+        backgroundImage: `url(${background})`,
+      }}
+    >
+      <Login />
+    </div>
+  );
 }
 
-export default App
+export default App;
