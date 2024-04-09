@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
+import { useRole } from "../ContextRole";
+
 function Home() {
+  const { role } = useRole();
   const [token, setToken] = useState("");
   useEffect(() => {
     const tokenValue = Cookies.get("token");
@@ -13,7 +15,6 @@ function Home() {
     }
   }, []);
   const [data, setData] = useState([]);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -36,14 +37,6 @@ function Home() {
     fetchData();
   }, [token]);
 
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    if (token) {
-      const decoded = jwtDecode(token);
-      setUser(decoded);
-    }
-  }, [token]);
   return (
     <div>
       {" "}
@@ -52,14 +45,11 @@ function Home() {
           <h2>{Student.St_Fullname}</h2>
         </div>
       ))}
-      {user ? (
         <div>
           <p>Welcome</p>
-          <p>Your role: {user.role}</p>
+          <p>Your role: {role}</p>
         </div>
-      ) : (
-        <p>Please log in</p>
-      )}
+     
     </div>
   );
 }
