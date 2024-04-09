@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import Cookies from "js-cookie";
+import jwt_decode from "jwt-decode"
+
 function App() {
   const handleLogin = () => {
     window.location.href = "http://localhost:3000/auth/google";
@@ -12,44 +13,51 @@ function App() {
     if (tokenValue) {
       setToken(tokenValue);
     } else {
-      console.log("k co token");
+      console.log("Không có token");
     }
   }, []);
-  const [data, setData] = useState([]);
+
+  const [role, setRole] = useState("");
 
   useEffect(() => {
-    const fetchData = async () => {
+    if (token) {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/Student/getAll",
-          {
-            headers: {
-              authorization: `"Bearer ${token}"`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        setData(response.data);
-        console.log(response.data);
+        const decoded = jwt_decode(token);
+        if (decoded) {
+          const userRole = decoded.payload.role;
+          setRole(userRole);
+        } else {
+          console.error('Không thể giải mã token hoặc token không hợp lệ');
+        }
       } catch (error) {
-        console.log(error);
+        console.error('Không thể giải mã token hoặc token không hợp lệ', error);
       }
-    };
-
-    fetchData();
+    }
   }, [token]);
-  return (
-    <div className="App">
-      <h1>Login with Google</h1>
 
-      <button onClick={handleLogin}>Login with Google</button>
-      {data.map((Student) => (
-        <div key={Student.MaSV}>
-          <h2>{Student.St_Fullname}</h2>
-        </div>
-      ))}
-    </div>
-  );
+  let context;
+  if (role === 'Student') {
+    context = (
+      <div className="App">
+        <h1>Student</h1>
+      </div>
+    );
+  } else if (role === 'Teacher') {
+    context = (
+      <div className="App">
+        <h1>Teacher</h1>
+      </div>
+    );
+  } else {
+    context = (
+      <div className="App">
+        <h1>Login with Google</h1>
+        <button onClick={handleLogin}>Login with Google</button>
+      </div>
+    );
+  }
+
+  return context;
 }
 
 export default App;
